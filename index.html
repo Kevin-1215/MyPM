@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>排球服飾工作室 | 待辦事項清單與專案管理系統</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+
+  <!-- ══ Navbar ══════════════════════════════════════════════ -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <div class="logo-mark">VS</div>
+      <div>
+        <div class="brand-text">Volleyball Apparel Studio Project Hub</div>
+        <div class="brand-sub">排球服飾工作室｜待辦事項清單與專案管理系統</div>
+      </div>
+    </div>
+    <div class="navbar-meta">
+      <div class="view-switcher" id="view-switcher">
+        <button class="view-tab active" data-view="dashboard">總覽儀表板</button>
+        <button class="view-tab" data-view="models">待辦與專案管理</button>
+        <button class="view-tab" data-view="gantt">專案甘特圖</button>
+      </div>
+      <button class="nav-chip" id="saving-status" style="cursor:pointer; border-color:var(--border); color:var(--text-muted); background:transparent;">授權直接存檔</button>
+    </div>
+  </nav>
+
+  <!-- ══ 主內容 ══════════════════════════════════════════════ -->
+  <main class="main-wrapper">
+    
+    <!-- 1. 總儀表板視圖 (Executive Dashboard) -->
+    <div id="dashboard-view" class="view-section active">
+      <header class="hero-section">
+        <div class="hero-eyebrow">Executive Dashboard</div>
+        <h1 class="hero-title">專案總體進度與決策中心</h1>
+        <p class="hero-subtitle">掌握全局進度，即時彙整各專案分類待辦執行狀態、核心決策與初期資源配置。</p>
+      </header>
+
+      <!-- 儀表板 KPI 指標 -->
+      <section class="kpi-bar dashboard-kpi-bar">
+        <div class="kpi-card">
+          <div class="kpi-label">全專案總待辦 Master Tasks</div>
+          <div class="kpi-value highlight" id="db-total-tasks">0 項</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">已完成任務 Completed</div>
+          <div class="kpi-value text-green" id="db-completed-tasks">0 項</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">待執行任務 In Progress</div>
+          <div class="kpi-value text-amber" id="db-pending-tasks">0 項</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">總體完成度 Overall Progress</div>
+          <div class="kpi-value highlight" id="db-overall-progress">0%</div>
+        </div>
+      </section>
+      
+      <div class="dashboard-grid">
+        <!-- 各專案分類進度卡片 -->
+        <div class="card dashboard-card">
+          <h3 class="card-title">各專案分類進度總覽</h3>
+          <div id="overall-progress-container"></div>
+        </div>
+
+        <!-- 決策備忘錄 -->
+        <div class="card dashboard-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); margin-bottom:12px; padding-bottom:12px;">
+            <h3 class="card-title" style="border:none; margin:0; padding:0;">重要決策備忘錄</h3>
+            <button id="add-decision-btn" class="nav-chip" style="cursor:pointer; background:var(--bg-subtle);">+ 新增</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="decisions-table">
+              <thead><tr><th>日期</th><th>決策主題</th><th>結論與原因</th><th>負責人</th><th>操作</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 資源估算 -->
+        <div class="card dashboard-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); margin-bottom:12px; padding-bottom:12px;">
+            <h3 class="card-title" style="border:none; margin:0; padding:0;">初期資源與預算估算</h3>
+            <button id="add-budget-btn" class="nav-chip" style="cursor:pointer; background:var(--bg-subtle);">+ 新增</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="budget-table">
+              <thead><tr><th>項目</th><th>預估金額 (NTD)</th><th>備註</th><th>操作</th></tr></thead>
+              <tbody></tbody>
+              <tfoot>
+                <tr>
+                  <td style="font-weight:700; text-align:right;">總計</td>
+                  <td colspan="3" id="budget-total" style="font-weight:700; color:var(--navy); font-size:1.1rem;">0</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- 全域待辦事項動態追蹤 -->
+        <div class="card dashboard-card master-todos-card">
+          <div class="card-header-flex">
+            <h3 class="card-title" style="border:none; margin:0; padding:0;">全域待辦事項動態追蹤</h3>
+            <div class="filter-group">
+              <select id="db-filter-model" class="filter-select">
+                <option value="all">所有專案分類</option>
+              </select>
+              <select id="db-filter-status" class="filter-select">
+                <option value="all">全部狀態</option>
+                <option value="pending">待處理 / 進行中</option>
+                <option value="completed">已完成</option>
+              </select>
+            </div>
+          </div>
+          <div class="master-todo-list-container" id="dashboard-master-todos">
+            <!-- Injected via app.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. 待辦與專案管理視圖 (Projects & Tasks View) -->
+    <div id="models-view" class="view-section" style="display: none;">
+      <header class="hero-section">
+        <div class="hero-eyebrow">Project Management & Action Items</div>
+        <h1 class="hero-title">專案待辦事項清單與規劃</h1>
+        <p class="hero-subtitle">
+          全方位的專案執行管理中心。您可自由管理第一層<strong>專案分類</strong>、自訂<strong>目標規劃、概念、優勢與挑戰分析</strong>，並針對各階段執行待辦進行完整的 <strong>新增、編輯、刪除 (CRUD)</strong>。
+        </p>
+      </header>
+
+      <!-- 第一層專案分類導航列 -->
+      <div class="category-nav-wrapper">
+        <nav id="scenario-nav" class="scenario-nav">
+            <!-- Injected via app.js -->
+        </nav>
+        <div class="category-actions">
+          <button id="add-category-btn" class="btn btn-outline-primary btn-sm">+ 新增專案分類</button>
+          <button id="edit-category-btn" class="btn btn-secondary btn-sm" title="編輯當前專案分類名稱">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            重新命名
+          </button>
+          <button id="del-category-btn" class="btn-danger-ghost btn-sm" title="刪除此專案分類">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            刪除分類
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI / 目標資訊橫條 (支援可編輯) -->
+      <section class="kpi-bar">
+        <div class="kpi-card editable-kpi-card" id="card-kpi-audience">
+          <div class="kpi-header-row">
+            <div class="kpi-label">目標受眾 Target Audience</div>
+            <button class="btn-icon btn-edit-kpi" id="btn-edit-audience" title="編輯目標受眾">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+          </div>
+          <div class="kpi-value highlight" id="kpi-audience">— 請選取分類 —</div>
+        </div>
+        <div class="kpi-card editable-kpi-card" id="card-kpi-revenue">
+          <div class="kpi-header-row">
+            <div class="kpi-label">收入來源 / 預期效益 Revenue Stream</div>
+            <button class="btn-icon btn-edit-kpi" id="btn-edit-revenue" title="編輯收入來源">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+          </div>
+          <div class="kpi-value" id="kpi-revenue">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">執行完成度 Progress</div>
+          <div class="kpi-value highlight" id="kpi-progress">0%</div>
+        </div>
+      </section>
+
+      <!-- 主要動態渲染區 -->
+      <section id="main-content">
+          <div class="content-grid">
+              <!-- 左側分析區 (支援完整 CRUD) -->
+              <div class="analysis-column">
+                  <!-- 核心概念 -->
+                  <div class="card analysis-card">
+                      <div class="card-header-flex" style="border:none; padding-bottom:0; margin-bottom:8px;">
+                        <h3 class="card-title" style="border:none; margin:0; padding:0;">核心概念 Concept</h3>
+                        <button class="btn-icon" id="btn-edit-concept" title="編輯核心概念">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </button>
+                      </div>
+                      <p class="card-text" id="model-concept">...</p>
+                  </div>
+                  
+                  <!-- 優勢與挑戰清單 (支援個別增修刪) -->
+                  <div class="analysis-row">
+                      <div class="card sub-card">
+                          <div class="card-header-flex" style="border:none; padding-bottom:0; margin-bottom:8px;">
+                            <h3 class="card-title text-green" style="border:none; margin:0; padding:0;">優勢 Pros</h3>
+                            <button class="btn btn-outline-primary btn-sm" id="btn-add-pro" style="padding:2px 8px; font-size:0.72rem;">+ 新增優勢</button>
+                          </div>
+                          <ul class="bullet-list editable-bullet-list" id="model-pros"></ul>
+                      </div>
+                      <div class="card sub-card">
+                          <div class="card-header-flex" style="border:none; padding-bottom:0; margin-bottom:8px;">
+                            <h3 class="card-title text-red" style="border:none; margin:0; padding:0;">挑戰 Cons</h3>
+                            <button class="btn btn-outline-primary btn-sm" id="btn-add-con" style="padding:2px 8px; font-size:0.72rem;">+ 新增挑戰</button>
+                          </div>
+                          <ul class="bullet-list editable-bullet-list" id="model-cons"></ul>
+                      </div>
+                  </div>
+              </div>
+
+              <!-- 右側代辦事項區 -->
+              <div class="todo-column">
+                  <div class="card todo-card">
+                      <div class="todo-header">
+                          <div class="todo-header-top">
+                            <h3 class="card-title">執行待辦清單 Action Items</h3>
+                            <div class="todo-action-buttons">
+                              <button id="add-phase-btn" class="btn btn-outline-primary btn-sm">+ 新增階段</button>
+                              <button id="add-task-btn" class="btn btn-primary btn-sm">+ 新增待辦事項</button>
+                            </div>
+                          </div>
+                          <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-bar-fill"></div></div>
+                      </div>
+                      <div id="todo-container" class="todo-container">
+                          <!-- Injected via app.js -->
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+    </div>
+
+    <!-- 3. 甘特圖時程視圖 (Gantt Chart View) -->
+    <div id="gantt-view" class="view-section" style="display: none;">
+      <header class="hero-section">
+        <div class="hero-eyebrow">Project Timeline & Execution Roadmap</div>
+        <h1 class="hero-title">專案執行時程甘特圖</h1>
+        <p class="hero-subtitle">
+          視覺化掌握所有專案與待辦事項的時間軸、關鍵節點 (Milestones)、起訖時程與任務負責人。
+        </p>
+      </header>
+
+      <div class="card gantt-container-card">
+        <!-- 甘特圖控制工具列 -->
+        <div class="gantt-toolbar">
+          <div class="gantt-filter-group">
+            <span class="gantt-filter-label">篩選專案：</span>
+            <div class="gantt-pill-group" id="gantt-model-pills">
+              <!-- Injected via app.js -->
+            </div>
+          </div>
+          
+          <div class="gantt-legend" id="gantt-dynamic-legend">
+            <!-- Injected via app.js -->
+          </div>
+        </div>
+
+        <!-- 甘特圖渲染主區域 -->
+        <div class="gantt-wrapper" id="gantt-chart-wrapper">
+          <!-- Injected via app.js -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-bar">
+      <span>排球服飾工作室 · 專案全方位管理系統 · 即時儲存於 data.js 檔案</span>
+    </footer>
+  </main>
+
+  <!-- ══ Task Modal 模態彈窗 ═══════════════════════ -->
+  <div class="modal-overlay" id="task-modal" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-task-title">新增待辦事項</h3>
+        <button class="modal-close" id="modal-task-close">&times;</button>
+      </div>
+      <form id="task-form" class="modal-body">
+        <input type="hidden" id="task-edit-model">
+        <input type="hidden" id="task-edit-phase-id">
+        <input type="hidden" id="task-edit-item-id">
+        
+        <div class="form-group">
+          <label class="form-label" for="task-form-phase">所屬階段 (Phase)</label>
+          <select class="form-control" id="task-form-phase" required></select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="task-form-name">任務名稱</label>
+          <input type="text" class="form-control" id="task-form-name" placeholder="例如：確認首波主打產品設計" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="task-form-start">預計開始日期</label>
+            <input type="date" class="form-control" id="task-form-start" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="task-form-due">預計完成日期</label>
+            <input type="date" class="form-control" id="task-form-due" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="task-form-owner">負責人 / 角色</label>
+          <input type="text" class="form-control" id="task-form-owner" placeholder="例如：設計師、工程師、Founder" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="task-form-notes">任務備註 (Notes / 執行細節)</label>
+          <textarea class="form-control" id="task-form-notes" rows="2" placeholder="填寫此任務的備註、執行細節或注意事項（選填）"></textarea>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modal-task-cancel">取消</button>
+          <button type="submit" class="btn btn-primary" id="modal-task-submit">儲存任務</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══ Phase Modal 模態彈窗 ═══════════════════════ -->
+  <div class="modal-overlay" id="phase-modal" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">新增階段群組</h3>
+        <button class="modal-close" id="modal-phase-close">&times;</button>
+      </div>
+      <form id="phase-form" class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="phase-form-name">階段名稱</label>
+          <input type="text" class="form-control" id="phase-form-name" placeholder="例如：Phase 4: 規模化與擴張" required>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modal-phase-cancel">取消</button>
+          <button type="submit" class="btn btn-primary">新增階段</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══ 專案分類 Modal 模態彈窗 ═══════════════════════ -->
+  <div class="modal-overlay" id="category-modal" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-category-title">新增專案分類</h3>
+        <button class="modal-close" id="modal-category-close">&times;</button>
+      </div>
+      <form id="category-form" class="modal-body">
+        <input type="hidden" id="category-edit-key">
+        
+        <div class="form-group">
+          <label class="form-label" for="category-form-name">專案分類名稱</label>
+          <input type="text" class="form-control" id="category-form-name" placeholder="例如：社群行銷專案、配件周邊開發" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="category-form-concept">核心概念描述</label>
+          <textarea class="form-control" id="category-form-concept" rows="3" placeholder="簡述本專案的核心目標與規劃..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="category-form-audience">目標受眾</label>
+            <input type="text" class="form-control" id="category-form-audience" placeholder="例如：熱愛排球的年輕球員">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="category-form-revenue">收入來源 / 預期效益</label>
+            <input type="text" class="form-control" id="category-form-revenue" placeholder="例如：配件周邊零售利潤">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modal-category-cancel">取消</button>
+          <button type="submit" class="btn btn-primary">確認儲存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══ 通用文字編輯 Modal 模態彈窗 (用於受眾/收入/概念) ═════════ -->
+  <div class="modal-overlay" id="text-edit-modal" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-text-title">編輯內容</h3>
+        <button class="modal-close" id="modal-text-close">&times;</button>
+      </div>
+      <form id="text-edit-form" class="modal-body">
+        <input type="hidden" id="text-edit-type">
+        <div class="form-group">
+          <label class="form-label" id="modal-text-label">內容</label>
+          <textarea class="form-control" id="modal-text-content" rows="4" required></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modal-text-cancel">取消</button>
+          <button type="submit" class="btn btn-primary">儲存變更</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ══ Google Firebase Realtime Database SDK ═════════════════ -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- ══ Scripts ══════════════════════════════════════════════ -->
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

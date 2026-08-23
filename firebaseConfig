@@ -1,0 +1,18 @@
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyB74NFgqqf81lN_tGFGdRtg6CC-2FtD0xo",
+  authDomain: "vb-apparel-design-startup.firebaseapp.com",
+  databaseURL: "https://vb-apparel-design-startup-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "vb-apparel-design-startup",
+  storageBucket: "vb-apparel-design-startup.firebasestorage.app",
+  messagingSenderId: "1045855280818",
+  appId: "1:1045855280818:web:01377dcf5757bf5a9bb3ab"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
