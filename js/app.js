@@ -258,6 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (navUserName) navUserName.textContent = currentSessionUser;
         if (navUserAvatar) navUserAvatar.textContent = currentSessionUser.charAt(0);
         if (dropdownUserName) dropdownUserName.textContent = currentSessionUser;
+        if (dropdownUserRole) {
+            dropdownUserRole.textContent = appData.global_data?.auth?.users?.[currentSessionUser]?.role || 'Co-founder';
+        }
     }
 
     function showLoginPortal() {
@@ -492,8 +495,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!appData.global_data.auth || !appData.global_data.auth.users) {
             appData.global_data.auth = {
                 users: {
-                    'Kevin': { password: 'vb2026', role: 'Founder / PM' },
-                    'Chloe': { password: 'vb2026', role: 'Partner / Design & Marketing' }
+                    'Kevin': { password: 'vb2026', role: 'Co-founder / PM & RD' },
+                    'Chloe': { password: 'vb2026', role: 'Co-founder / Design & Marketing' }
                 }
             };
         }
