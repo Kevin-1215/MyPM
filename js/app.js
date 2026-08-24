@@ -269,6 +269,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mainContentWrapper) mainContentWrapper.style.display = 'none';
         if (loginErrorMsg) loginErrorMsg.style.display = 'none';
         if (loginPassword) loginPassword.value = '';
+
+        // 🌟 自動從資料層 (Data Layer) 取得所有成員與職稱動態渲染下拉選單
+        if (loginUsername && appData.global_data?.auth?.users) {
+            const currentVal = loginUsername.value;
+            loginUsername.innerHTML = '';
+            Object.keys(appData.global_data.auth.users).forEach(name => {
+                const u = appData.global_data.auth.users[name];
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = `${name} (${u.role || 'Member'})`;
+                loginUsername.appendChild(opt);
+            });
+            if (currentVal && appData.global_data.auth.users[currentVal]) {
+                loginUsername.value = currentVal;
+            }
+        }
     }
 
     function setupAuth() {
