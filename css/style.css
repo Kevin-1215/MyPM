@@ -217,11 +217,20 @@ body {
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
   padding: 0 2.5rem;
-  height: 56px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   box-shadow: var(--shadow-sm);
+  gap: 20px;
+}
+
+.navbar-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex: 1;
 }
 
 .navbar-brand {
@@ -231,13 +240,14 @@ body {
 }
 
 .logo-mark {
-  width: 32px; height: 32px;
+  width: 34px; height: 34px;
   background: var(--navy);
-  border-radius: 6px;
+  border-radius: 8px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 800;
+  font-size: 13px; font-weight: 800;
   color: #ffffff;
   letter-spacing: 0.02em;
+  box-shadow: 0 2px 6px rgba(0, 51, 141, 0.2);
 }
 
 .brand-text {
@@ -255,10 +265,10 @@ body {
   letter-spacing: 0.02em;
 }
 
-.navbar-meta {
+.navbar-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .nav-chip {
@@ -283,12 +293,18 @@ body {
 }
 
 /* ── SPA View Switcher ──────────────────────────────────────── */
+.view-switcher-wrapper {
+  display: flex;
+  align-items: center;
+}
+
 .view-switcher {
   display: flex;
   background: var(--bg-subtle);
   border: 1px solid var(--border);
   border-radius: 100px;
-  overflow: hidden;
+  padding: 3px;
+  gap: 2px;
 }
 
 .view-tab {
@@ -299,7 +315,9 @@ body {
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  border-radius: 100px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
 }
 
 .view-tab:hover {
@@ -309,6 +327,117 @@ body {
 .view-tab.active {
   background: var(--navy);
   color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 51, 141, 0.25);
+}
+
+/* ── 使用者頭像徽章與下拉選單 ────────────────────────────────── */
+.user-profile-wrapper {
+  position: relative;
+}
+
+.user-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--navy);
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.user-profile-btn:hover {
+  background: var(--bg-hover);
+  border-color: var(--blue);
+}
+
+.user-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.dropdown-chevron {
+  color: var(--text-muted);
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  width: 200px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1000;
+  animation: slideUp 0.2s ease;
+}
+
+.dropdown-header {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dropdown-user-role {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.dropdown-user-name {
+  font-size: 0.88rem;
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background: var(--bg-hover);
+  color: var(--navy);
+}
+
+.dropdown-item.text-danger {
+  color: var(--red-text);
+}
+
+.dropdown-item.text-danger:hover {
+  background: var(--red-bg);
 }
 
 /* ── 主容器 ─────────────────────────────────────────────────── */
@@ -2067,60 +2196,111 @@ h1.hero-title {
 
 /* ── 手機與窄螢幕 (<= 768px) ─────────────────────────────────── */
 @media (max-width: 768px) {
-  /* Navbar 自適應堆疊 */
+  /* 🌟 手機版 Navbar 雙行優雅佈局 */
   .navbar {
-    padding: 10px 14px;
+    padding: 8px 12px 10px;
     height: auto;
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
+    gap: 8px;
+    background: var(--bg-surface);
+  }
+
+  .navbar-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
   }
 
   .navbar-brand {
-    justify-content: flex-start;
-    gap: 10px;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
   }
 
   .logo-mark {
     width: 28px;
     height: 28px;
     font-size: 11px;
+    border-radius: 6px;
+    flex-shrink: 0;
   }
 
   .brand-text {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .brand-sub {
-    font-size: 0.62rem;
+    display: none; /* 手機上隱藏副標題，讓頂部極致清爽 */
   }
 
-  .navbar-meta {
-    width: 100%;
-    justify-content: space-between;
+  .navbar-actions {
     gap: 6px;
-    overflow-x: auto;
-    padding-bottom: 2px;
-  }
-
-  .view-switcher {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .view-tab {
-    flex: 1;
-    padding: 6px 8px;
-    font-size: 0.74rem;
-    text-align: center;
-    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .nav-chip {
-    padding: 4px 10px;
+    padding: 4px 8px;
     font-size: 0.68rem;
+  }
+
+  .user-profile-btn {
+    padding: 2px 8px 2px 2px;
+    font-size: 0.76rem;
+  }
+
+  .user-avatar {
+    width: 22px;
+    height: 22px;
+    font-size: 0.7rem;
+  }
+
+  /* 🌟 4 大頁籤：滿寬獨立橫向滑動軌道 (Horizontal Smooth Scrollable Bar) */
+  .view-switcher-wrapper {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .view-switcher {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    background: #e9eff7;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 4px;
+    scrollbar-width: none; /* 隱藏原生捲軸 */
+  }
+
+  .view-switcher::-webkit-scrollbar {
+    display: none; /* 隱藏 Chrome/Safari 捲軸 */
+  }
+
+  .view-tab {
+    flex: 0 0 auto; /* 🌟 關鍵：絕對不被壓縮！每個 Tab 擁有完整空間 */
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 7px;
+    text-align: center;
     white-space: nowrap;
-    flex-shrink: 0;
+    background: transparent;
+    color: var(--text-muted);
+  }
+
+  .view-tab.active {
+    background: var(--navy);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 51, 141, 0.25);
   }
 
   /* 主內容容器縮減 padding */
