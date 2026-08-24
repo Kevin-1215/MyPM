@@ -5,62 +5,163 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>排球服飾工作室 | 待辦事項清單與專案管理系統</title>
-  <link rel="stylesheet" href="css/style.css?v=2.1" />
+  <link rel="stylesheet" href="css/style.css?v=2.5" />
   <style>
-    /* 確保登入門戶在任何網路延遲或快取情況下 100% 完美置中與渲染 */
+    /* ══ 登入門戶 100% 精確獨立樣式 (保證與目標設計完全一致) ══ */
     .login-portal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 60%, #020617 100%) !important;
-      z-index: 99999 !important;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      position: fixed !important;
+      top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+      background: radial-gradient(circle at 50% 25%, #1e293b 0%, #0f172a 60%, #020617 100%) !important;
+      z-index: 999999 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 20px !important;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+      box-sizing: border-box !important;
     }
+
     .login-card {
-      background: rgba(255, 255, 255, 0.98) !important;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      border-radius: 12px !important;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      background: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.6) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
       width: 100% !important;
-      max-width: 440px !important;
-      overflow: hidden;
+      max-width: 430px !important;
+      overflow: hidden !important;
+      box-sizing: border-box !important;
+      animation: loginFadeUp 0.35s ease-out !important;
     }
+
+    @keyframes loginFadeUp {
+      from { transform: translateY(16px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
     .login-header {
-      padding: 32px 28px 20px !important;
+      padding: 38px 30px 24px !important;
       text-align: center !important;
-      background: linear-gradient(to bottom, #f8fafc, #ffffff);
-      border-bottom: 1px solid #D4E2F1;
+      background: linear-gradient(to bottom, #f8fafc, #ffffff) !important;
+      border-bottom: 1px solid #e2e8f0 !important;
     }
+
     .login-logo-mark {
-      width: 48px; height: 48px;
-      background: #00338D;
-      color: #fff;
-      border-radius: 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: 800;
-      margin-bottom: 14px;
+      width: 52px !important;
+      height: 52px !important;
+      background: #00338D !important;
+      color: #ffffff !important;
+      border-radius: 14px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 19px !important;
+      font-weight: 800 !important;
+      letter-spacing: 0.05em !important;
+      box-shadow: 0 6px 16px rgba(0, 51, 141, 0.28) !important;
+      margin-bottom: 16px !important;
     }
+
     .login-title {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: #00338D;
-      margin-bottom: 4px;
+      font-size: 1.45rem !important;
+      font-weight: 800 !important;
+      color: #00338D !important;
+      letter-spacing: -0.02em !important;
+      margin-bottom: 6px !important;
     }
+
     .login-subtitle {
-      font-size: 0.78rem;
-      color: #6C84A7;
+      font-size: 0.8rem !important;
+      color: #64748b !important;
+      font-weight: 500 !important;
     }
+
     .login-body {
-      padding: 26px 28px 30px !important;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
+      padding: 28px 32px 36px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 18px !important;
+    }
+
+    .login-body .form-group {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 7px !important;
+    }
+
+    .login-body .form-label {
+      font-size: 0.84rem !important;
+      font-weight: 600 !important;
+      color: #475569 !important;
+    }
+
+    .login-body .form-control {
+      width: 100% !important;
+      padding: 10px 14px !important;
+      font-size: 0.92rem !important;
+      border: 1.5px solid #cbd5e1 !important;
+      border-radius: 9px !important;
+      background: #ffffff !important;
+      color: #0f172a !important;
+      font-family: inherit !important;
+      outline: none !important;
+      transition: all 0.2s ease !important;
+      box-sizing: border-box !important;
+    }
+
+    .login-body .form-control:focus {
+      border-color: #005EB8 !important;
+      box-shadow: 0 0 0 3px rgba(0, 94, 184, 0.15) !important;
+    }
+
+    .login-body select.form-control {
+      cursor: pointer !important;
+    }
+
+    .btn-login {
+      width: 100% !important;
+      padding: 12px 16px !important;
+      font-size: 0.95rem !important;
+      font-weight: 700 !important;
+      background: #00338D !important;
+      color: #ffffff !important;
+      border: none !important;
+      border-radius: 9px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      cursor: pointer !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      margin-top: 6px !important;
+      box-shadow: 0 2px 6px rgba(0, 51, 141, 0.2) !important;
+    }
+
+    .btn-login:hover {
+      background: #002266 !important;
+      box-shadow: 0 6px 16px rgba(0, 51, 141, 0.35) !important;
+      transform: translateY(-1px) !important;
+    }
+
+    .btn-login:active {
+      transform: translateY(0) !important;
+    }
+
+    .login-footer-hint {
+      text-align: center !important;
+      font-size: 0.75rem !important;
+      color: #64748b !important;
+      line-height: 1.5 !important;
+      margin-top: 2px !important;
+    }
+
+    .login-footer-hint code {
+      background: #f1f5f9 !important;
+      padding: 2px 6px !important;
+      border-radius: 4px !important;
+      border: 1px solid #e2e8f0 !important;
+      font-family: monospace !important;
+      font-weight: 700 !important;
+      color: #00338D !important;
     }
   </style>
 </head>
