@@ -50,11 +50,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // DOM Elements - Navigation & Views
+    const loginPortal = document.getElementById('login-portal');
+    const mainNavbar = document.getElementById('main-navbar');
+    const mainContentWrapper = document.getElementById('main-content-wrapper');
     const viewTabs = document.querySelectorAll('.view-tab');
     const dashboardView = document.getElementById('dashboard-view');
     const modelsView = document.getElementById('models-view');
     const ganttView = document.getElementById('gantt-view');
+    const logsView = document.getElementById('logs-view');
     const savingStatus = document.getElementById('saving-status');
+
+    // DOM Elements - User Profile & Auth
+    const loginForm = document.getElementById('login-form');
+    const loginUsername = document.getElementById('login-username');
+    const loginPassword = document.getElementById('login-password');
+    const loginErrorMsg = document.getElementById('login-error-msg');
+    const userProfileWrapper = document.getElementById('user-profile-wrapper');
+    const userProfileBtn = document.getElementById('user-profile-btn');
+    const navUserAvatar = document.getElementById('nav-user-avatar');
+    const navUserName = document.getElementById('nav-user-name');
+    const userDropdownMenu = document.getElementById('user-dropdown-menu');
+    const dropdownUserName = document.getElementById('dropdown-user-name');
+    const btnOpenChangePwd = document.getElementById('btn-open-change-pwd');
+    const btnLogout = document.getElementById('btn-logout');
     
     // DOM Elements - Dashboard
     const dbTotalTasks = document.getElementById('db-total-tasks');
@@ -70,6 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const dbFilterModel = document.getElementById('db-filter-model');
     const dbFilterStatus = document.getElementById('db-filter-status');
     const dashboardMasterTodos = document.getElementById('dashboard-master-todos');
+    const dbQuickAddLogBtn = document.getElementById('db-quick-add-log-btn');
+    const dbKevinHours = document.getElementById('db-kevin-hours');
+    const dbChloeHours = document.getElementById('db-chloe-hours');
+    const dbKevinBar = document.getElementById('db-kevin-bar');
+    const dbChloeBar = document.getElementById('db-chloe-bar');
+    const dbProjectHoursContainer = document.getElementById('db-project-hours-container');
+    const dbRecentLogsList = document.getElementById('db-recent-logs-list');
 
     // DOM Elements - Projects & Tasks
     const scenarioNav = document.getElementById('scenario-nav');
@@ -98,6 +123,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const ganttModelPills = document.getElementById('gantt-model-pills');
     const ganttDynamicLegend = document.getElementById('gantt-dynamic-legend');
     const ganttChartWrapper = document.getElementById('gantt-chart-wrapper');
+
+    // DOM Elements - Work Logs
+    const logKpiWeekHours = document.getElementById('log-kpi-week-hours');
+    const logKpiTotalHours = document.getElementById('log-kpi-total-hours');
+    const logKpiKevinHours = document.getElementById('log-kpi-kevin-hours');
+    const logKpiChloeHours = document.getElementById('log-kpi-chloe-hours');
+    const addLogBtn = document.getElementById('add-log-btn');
+    const logFilterMember = document.getElementById('log-filter-member');
+    const logFilterProject = document.getElementById('log-filter-project');
+    const logFilterMonth = document.getElementById('log-filter-month');
+    const workLogsTimeline = document.getElementById('work-logs-timeline');
 
     // DOM Elements - Modals
     const taskModal = document.getElementById('task-modal');
@@ -141,6 +177,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTextCancel = document.getElementById('modal-text-cancel');
     const textEditType = document.getElementById('text-edit-type');
 
+    const workLogModal = document.getElementById('work-log-modal');
+    const workLogForm = document.getElementById('work-log-form');
+    const modalWorkLogTitle = document.getElementById('modal-work-log-title');
+    const modalWorkLogClose = document.getElementById('modal-work-log-close');
+    const modalWorkLogCancel = document.getElementById('modal-work-log-cancel');
+    const logEditId = document.getElementById('log-edit-id');
+    const logFormDate = document.getElementById('log-form-date');
+    const logFormMember = document.getElementById('log-form-member');
+    const logFormProject = document.getElementById('log-form-project');
+    const logFormHours = document.getElementById('log-form-hours');
+    const logFormPhase = document.getElementById('log-form-phase');
+    const logFormTask = document.getElementById('log-form-task');
+    const logFormContent = document.getElementById('log-form-content');
+
+    const changePasswordModal = document.getElementById('change-password-modal');
+    const changePasswordForm = document.getElementById('change-password-form');
+    const modalChangePwdClose = document.getElementById('modal-change-pwd-close');
+    const modalChangePwdCancel = document.getElementById('modal-change-pwd-cancel');
+    const pwdFormUser = document.getElementById('pwd-form-user');
+    const pwdFormOld = document.getElementById('pwd-form-old');
+    const pwdFormNew = document.getElementById('pwd-form-new');
+    const pwdFormConfirm = document.getElementById('pwd-form-confirm');
+    const pwdErrorMsg = document.getElementById('pwd-error-msg');
+
+    let currentSessionUser = null;
+
     // ── 初始化 App 與 Firebase 雲端即時同步 ────────────────────────
     function init() {
         if (window.dashboardData) {
@@ -152,15 +214,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         normalizeData();
 
+        setupAuth();
         setupViewSwitcher();
         setupGlobalDataEditors();
         setupModals();
         setupCategoryCRUD();
         setupCardCRUD();
         setupDashboardFilters();
+        setupWorkLogs();
         
         renderScenarioNav();
         renderDashboard();
+        renderWorkLogsView();
         
         const modelKeys = getModelKeys();
         if (modelKeys.length > 0) {
@@ -169,6 +234,145 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 啟動 Firebase 雲端雙向即時同步
         initFirebaseSync();
+
+        // 檢查登入狀態
+        checkSession();
+    }
+
+    function checkSession() {
+        const savedUser = localStorage.getItem('vb_auth_user');
+        if (savedUser && appData.global_data?.auth?.users?.[savedUser]) {
+            currentSessionUser = savedUser;
+            showAuthenticatedUI();
+        } else {
+            currentSessionUser = null;
+            showLoginPortal();
+        }
+    }
+
+    function showAuthenticatedUI() {
+        if (loginPortal) loginPortal.style.display = 'none';
+        if (mainNavbar) mainNavbar.style.display = 'flex';
+        if (mainContentWrapper) mainContentWrapper.style.display = 'block';
+
+        if (navUserName) navUserName.textContent = currentSessionUser;
+        if (navUserAvatar) navUserAvatar.textContent = currentSessionUser.charAt(0);
+        if (dropdownUserName) dropdownUserName.textContent = currentSessionUser;
+    }
+
+    function showLoginPortal() {
+        if (loginPortal) loginPortal.style.display = 'flex';
+        if (mainNavbar) mainNavbar.style.display = 'none';
+        if (mainContentWrapper) mainContentWrapper.style.display = 'none';
+        if (loginErrorMsg) loginErrorMsg.style.display = 'none';
+        if (loginPassword) loginPassword.value = '';
+    }
+
+    function setupAuth() {
+        // 登入表單提交
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = loginUsername.value.trim();
+                const password = loginPassword.value.trim();
+
+                const userRecord = appData.global_data?.auth?.users?.[username];
+                if (!userRecord || userRecord.password !== password) {
+                    loginErrorMsg.textContent = '❌ 密碼錯誤，請重新輸入。';
+                    loginErrorMsg.style.display = 'block';
+                    return;
+                }
+
+                currentSessionUser = username;
+                localStorage.setItem('vb_auth_user', username);
+                loginErrorMsg.style.display = 'none';
+                showAuthenticatedUI();
+            });
+        }
+
+        // 使用者下拉選單開關
+        if (userProfileBtn) {
+            userProfileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isShown = userDropdownMenu.style.display === 'flex';
+                userDropdownMenu.style.display = isShown ? 'none' : 'flex';
+            });
+        }
+
+        document.addEventListener('click', () => {
+            if (userDropdownMenu) userDropdownMenu.style.display = 'none';
+        });
+
+        if (userDropdownMenu) {
+            userDropdownMenu.addEventListener('click', (e) => e.stopPropagation());
+        }
+
+        // 登出按鈕
+        if (btnLogout) {
+            btnLogout.addEventListener('click', () => {
+                localStorage.removeItem('vb_auth_user');
+                currentSessionUser = null;
+                showLoginPortal();
+            });
+        }
+
+        // 修改密碼按鈕
+        if (btnOpenChangePwd) {
+            btnOpenChangePwd.addEventListener('click', () => {
+                if (userDropdownMenu) userDropdownMenu.style.display = 'none';
+                pwdFormUser.value = currentSessionUser;
+                pwdFormOld.value = '';
+                pwdFormNew.value = '';
+                pwdFormConfirm.value = '';
+                pwdErrorMsg.style.display = 'none';
+                changePasswordModal.style.display = 'flex';
+            });
+        }
+
+        if (modalChangePwdClose) {
+            modalChangePwdClose.addEventListener('click', () => {
+                changePasswordModal.style.display = 'none';
+            });
+        }
+        if (modalChangePwdCancel) {
+            modalChangePwdCancel.addEventListener('click', () => {
+                changePasswordModal.style.display = 'none';
+            });
+        }
+
+        // 修改密碼表單提交
+        if (changePasswordForm) {
+            changePasswordForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const oldPwd = pwdFormOld.value.trim();
+                const newPwd = pwdFormNew.value.trim();
+                const confirmPwd = pwdFormConfirm.value.trim();
+
+                const userRecord = appData.global_data?.auth?.users?.[currentSessionUser];
+                if (!userRecord || userRecord.password !== oldPwd) {
+                    pwdErrorMsg.textContent = '❌ 原密碼不正確！';
+                    pwdErrorMsg.style.display = 'block';
+                    return;
+                }
+
+                if (newPwd.length < 4) {
+                    pwdErrorMsg.textContent = '❌ 新密碼長度至少需 4 個字元！';
+                    pwdErrorMsg.style.display = 'block';
+                    return;
+                }
+
+                if (newPwd !== confirmPwd) {
+                    pwdErrorMsg.textContent = '❌ 兩次輸入的新密碼不一致！';
+                    pwdErrorMsg.style.display = 'block';
+                    return;
+                }
+
+                userRecord.password = newPwd;
+                saveData();
+                changePasswordModal.style.display = 'none';
+                alert('✅ 密碼修改成功！下次登入請使用新密碼。');
+            });
+        }
     }
 
     function initFirebaseSync() {
@@ -202,7 +406,6 @@ document.addEventListener('DOMContentLoaded', () => {
             dbDataRef.on('value', (snapshot) => {
                 const cloudData = snapshot.val();
                 if (cloudData && typeof cloudData === 'object') {
-                    // 若是本機剛剛發出的更新，不需重複重繪
                     if (isLocalUpdate) {
                         isLocalUpdate = false;
                         return;
@@ -213,7 +416,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     refreshActiveViews();
                     updateSyncStatus('online', '🟢 雲端已即時同步');
                 } else {
-                    // 雲端尚無資料，自動將本機預設資料上傳作為初始種子資料
                     console.log("☁️ 雲端尚無資料，正在上傳初始資料集...");
                     if (window.dashboardData) {
                         dbDataRef.set(window.dashboardData);
@@ -258,6 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         renderScenarioNav();
         renderDashboard();
+        renderWorkLogsView();
 
         if (view === 'models') {
             if (currentModelKey && appData[currentModelKey]) {
@@ -268,6 +471,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else if (view === 'gantt') {
             renderGanttChart();
+        } else if (view === 'logs') {
+            renderWorkLogsView();
         }
     }
 
@@ -277,10 +482,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function normalizeData() {
         if (!appData.global_data) {
-            appData.global_data = { decisions: [], budget: [] };
+            appData.global_data = { decisions: [], budget: [], work_logs: [], auth: {} };
         }
         if (!appData.global_data.decisions) appData.global_data.decisions = [];
         if (!appData.global_data.budget) appData.global_data.budget = [];
+        if (!appData.global_data.work_logs) appData.global_data.work_logs = [];
+        
+        // 初始化雙成員帳號密碼
+        if (!appData.global_data.auth || !appData.global_data.auth.users) {
+            appData.global_data.auth = {
+                users: {
+                    'Kevin': { password: 'vb2026', role: 'Founder / PM' },
+                    'Chloe': { password: 'vb2026', role: 'Partner / Design & Marketing' }
+                }
+            };
+        }
 
         getModelKeys().forEach(key => {
             const model = appData[key];
@@ -318,6 +534,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 dashboardView.style.display = view === 'dashboard' ? 'block' : 'none';
                 modelsView.style.display = view === 'models' ? 'block' : 'none';
                 ganttView.style.display = view === 'gantt' ? 'block' : 'none';
+                logsView.style.display = view === 'logs' ? 'block' : 'none';
 
                 if (view === 'dashboard') {
                     renderDashboard();
@@ -325,9 +542,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (currentModelKey) selectModel(currentModelKey);
                 } else if (view === 'gantt') {
                     renderGanttChart();
+                } else if (view === 'logs') {
+                    renderWorkLogsView();
                 }
             });
         });
+
+        // 儀表板上的「查看全部日誌」快捷按鈕
+        document.querySelectorAll('.btn-view-all-logs').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const logsTab = document.querySelector('.view-tab[data-view="logs"]');
+                if (logsTab) logsTab.click();
+            });
+        });
+
+        if (dbQuickAddLogBtn) {
+            dbQuickAddLogBtn.addEventListener('click', () => {
+                openWorkLogModal();
+            });
+        }
     }
 
     // ── 總儀表板 (Dashboard) 邏輯 ──────────────────────────────────
@@ -401,6 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderDecisions();
         renderBudget();
         renderMasterTodos();
+        renderTimesheetDashboard();
     }
 
     function renderMasterTodos() {
@@ -1545,6 +1779,405 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         ganttChartWrapper.appendChild(container);
+    }
+
+    // ── 團隊工時與報工 (Timesheet & Work Logs) 系統 ─────────────────
+    function getStartOfWeek(d) {
+        const date = new Date(d);
+        const day = date.getDay();
+        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // 調整為週一開始
+        return new Date(date.setDate(diff));
+    }
+
+    function renderTimesheetDashboard() {
+        const logs = appData.global_data?.work_logs || [];
+        let kevinHours = 0;
+        let chloeHours = 0;
+        const projectHours = {};
+
+        getModelKeys().forEach(k => { projectHours[k] = 0; });
+
+        logs.forEach(log => {
+            const h = parseFloat(log.hours) || 0;
+            if (log.member === 'Kevin') kevinHours += h;
+            if (log.member === 'Chloe') chloeHours += h;
+
+            if (log.projectKey && projectHours[log.projectKey] !== undefined) {
+                projectHours[log.projectKey] += h;
+            }
+        });
+
+        const totalHours = kevinHours + chloeHours;
+
+        if (dbKevinHours) dbKevinHours.textContent = `${kevinHours.toFixed(1)} 小時`;
+        if (dbChloeHours) dbChloeHours.textContent = `${chloeHours.toFixed(1)} 小時`;
+
+        const kevinPercent = totalHours > 0 ? (kevinHours / totalHours) * 100 : 0;
+        const chloePercent = totalHours > 0 ? (chloeHours / totalHours) * 100 : 0;
+
+        if (dbKevinBar) dbKevinBar.style.width = `${kevinPercent}%`;
+        if (dbChloeBar) dbChloeBar.style.width = `${chloePercent}%`;
+
+        // 專案工時分佈
+        if (dbProjectHoursContainer) {
+            dbProjectHoursContainer.innerHTML = '';
+            const maxProjectHour = Math.max(...Object.values(projectHours), 1);
+
+            getModelKeys().forEach(k => {
+                const pHour = projectHours[k] || 0;
+                const pTitle = appData[k]?.title || k;
+                const pPercent = (pHour / maxProjectHour) * 100;
+
+                const row = document.createElement('div');
+                row.className = 'project-hour-row';
+                row.innerHTML = `
+                    <div class="project-hour-name" title="${pTitle}">${pTitle}</div>
+                    <div class="project-hour-bar-wrapper">
+                        <div class="project-hour-bar-fill" style="width:${pPercent}%;"></div>
+                    </div>
+                    <div class="project-hour-num">${pHour.toFixed(1)}h</div>
+                `;
+                dbProjectHoursContainer.appendChild(row);
+            });
+        }
+
+        // 近期 5 筆工作動態
+        if (dbRecentLogsList) {
+            dbRecentLogsList.innerHTML = '';
+            const recentLogs = [...logs].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 5);
+
+            if (recentLogs.length === 0) {
+                dbRecentLogsList.innerHTML = `<div style="text-align:center; padding:16px; color:var(--text-muted); font-size:0.8rem;">尚無工作日誌記錄</div>`;
+            } else {
+                recentLogs.forEach(log => {
+                    const item = document.createElement('div');
+                    item.className = 'recent-log-item';
+                    const memberClass = log.member === 'Kevin' ? 'badge-kevin' : 'badge-chloe';
+                    const projTitle = appData[log.projectKey]?.title || log.projectKey || '專案';
+
+                    item.innerHTML = `
+                        <span class="recent-log-member badge-member ${memberClass}">${log.member}</span>
+                        <div class="recent-log-body">
+                            <div class="recent-log-title">${log.content}</div>
+                            <div class="recent-log-meta">
+                                <span>📅 ${log.date}</span>
+                                <span>📁 ${projTitle}</span>
+                                <span>⏱️ ${log.hours} 小時</span>
+                            </div>
+                        </div>
+                    `;
+                    dbRecentLogsList.appendChild(item);
+                });
+            }
+        }
+    }
+
+    function renderWorkLogsView() {
+        const logs = appData.global_data?.work_logs || [];
+
+        // 1. KPI 指標計算
+        let totalHours = 0;
+        let kevinHours = 0;
+        let chloeHours = 0;
+        let weekHours = 0;
+
+        const now = new Date();
+        const startOfWeek = getStartOfWeek(now);
+
+        logs.forEach(log => {
+            const h = parseFloat(log.hours) || 0;
+            totalHours += h;
+            if (log.member === 'Kevin') kevinHours += h;
+            if (log.member === 'Chloe') chloeHours += h;
+
+            const logDate = new Date(log.date);
+            if (logDate >= startOfWeek && logDate <= now) {
+                weekHours += h;
+            }
+        });
+
+        if (logKpiTotalHours) logKpiTotalHours.textContent = `${totalHours.toFixed(1)} 小時`;
+        if (logKpiKevinHours) logKpiKevinHours.textContent = `${kevinHours.toFixed(1)} 小時`;
+        if (logKpiChloeHours) logKpiChloeHours.textContent = `${chloeHours.toFixed(1)} 小時`;
+        if (logKpiWeekHours) logKpiWeekHours.textContent = `${weekHours.toFixed(1)} 小時`;
+
+        // 2. 更新篩選下拉選單選項
+        if (logFilterProject) {
+            const currentProjVal = logFilterProject.value;
+            logFilterProject.innerHTML = '<option value="all">所有專案分類</option>';
+            getModelKeys().forEach(key => {
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = appData[key].title;
+                logFilterProject.appendChild(opt);
+            });
+            if (getModelKeys().includes(currentProjVal) || currentProjVal === 'all') {
+                logFilterProject.value = currentProjVal;
+            }
+        }
+
+        // 3. 根據篩選條件過濾日誌
+        const memberFilter = logFilterMember ? logFilterMember.value : 'all';
+        const projectFilter = logFilterProject ? logFilterProject.value : 'all';
+        const monthFilter = logFilterMonth ? logFilterMonth.value : '';
+
+        let filteredLogs = logs.filter(log => {
+            if (memberFilter !== 'all' && log.member !== memberFilter) return false;
+            if (projectFilter !== 'all' && log.projectKey !== projectFilter) return false;
+            if (monthFilter && !log.date.startsWith(monthFilter)) return false;
+            return true;
+        });
+
+        // 依日期由新到舊排序
+        filteredLogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // 4. 渲染時間軸清單
+        if (!workLogsTimeline) return;
+        workLogsTimeline.innerHTML = '';
+
+        if (filteredLogs.length === 0) {
+            workLogsTimeline.innerHTML = `
+                <div style="text-align:center; padding:40px 20px; color:var(--text-muted); font-size:0.9rem;">
+                    目前尚無符合條件的工作日誌。點擊上方「填寫工作日誌」開始記錄團隊成果！
+                </div>
+            `;
+            return;
+        }
+
+        // 依日期分組
+        const groupedByDate = {};
+        filteredLogs.forEach(log => {
+            if (!groupedByDate[log.date]) groupedByDate[log.date] = [];
+            groupedByDate[log.date].push(log);
+        });
+
+        Object.keys(groupedByDate).forEach(dateStr => {
+            const dateGroup = document.createElement('div');
+            dateGroup.className = 'log-date-group';
+
+            const dateHeader = document.createElement('div');
+            dateHeader.className = 'log-date-header';
+            const d = new Date(dateStr);
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            const dayOfWeek = isNaN(d.getDay()) ? '' : ` (週${days[d.getDay()]})`;
+            dateHeader.textContent = `${dateStr}${dayOfWeek}`;
+            dateGroup.appendChild(dateHeader);
+
+            groupedByDate[dateStr].forEach(log => {
+                const card = document.createElement('div');
+                card.className = 'log-item-card';
+
+                const memberClass = log.member === 'Kevin' ? 'badge-kevin' : 'badge-chloe';
+                const projTitle = appData[log.projectKey]?.title || log.projectKey || '一般專案';
+                const meta = getModelMeta(log.projectKey);
+
+                let scopeText = '';
+                if (log.phaseName) scopeText += `<span>📁 ${log.phaseName}</span>`;
+                if (log.taskName) scopeText += `<span>↳ 🎯 ${log.taskName}</span>`;
+
+                card.innerHTML = `
+                    <div class="log-item-main">
+                        <div class="log-item-badges">
+                            <span class="badge-member ${memberClass}">👤 ${log.member}</span>
+                            <span class="badge-hours">⏱️ ${log.hours} 小時</span>
+                            <span class="badge ${meta.badgeClass}">${projTitle}</span>
+                        </div>
+                        <div class="log-item-desc">${log.content}</div>
+                        ${scopeText ? `<div class="log-item-scope">${scopeText}</div>` : ''}
+                    </div>
+                    <div class="log-item-actions">
+                        <button class="btn btn-secondary btn-sm btn-edit-log" title="編輯日誌">編輯</button>
+                        <button class="btn-danger-ghost btn-sm btn-del-log" title="刪除日誌">刪除</button>
+                    </div>
+                `;
+
+                // 編輯按鈕
+                card.querySelector('.btn-edit-log').addEventListener('click', () => {
+                    openWorkLogModal(log.id);
+                });
+
+                // 刪除按鈕
+                card.querySelector('.btn-del-log').addEventListener('click', () => {
+                    if (confirm(`確定要刪除這筆由 ${log.member} 填寫的 ${log.hours} 小時工作日誌嗎？`)) {
+                        deleteWorkLog(log.id);
+                    }
+                });
+
+                dateGroup.appendChild(card);
+            });
+
+            workLogsTimeline.appendChild(dateGroup);
+        });
+    }
+
+    function setupWorkLogs() {
+        if (addLogBtn) {
+            addLogBtn.addEventListener('click', () => {
+                openWorkLogModal();
+            });
+        }
+
+        if (logFilterMember) logFilterMember.addEventListener('change', renderWorkLogsView);
+        if (logFilterProject) logFilterProject.addEventListener('change', renderWorkLogsView);
+        if (logFilterMonth) logFilterMonth.addEventListener('change', renderWorkLogsView);
+
+        // 彈窗關閉與取消
+        if (modalWorkLogClose) modalWorkLogClose.addEventListener('click', () => { workLogModal.style.display = 'none'; });
+        if (modalWorkLogCancel) modalWorkLogCancel.addEventListener('click', () => { workLogModal.style.display = 'none'; });
+
+        // 彈窗專案連動下拉
+        if (logFormProject) {
+            logFormProject.addEventListener('change', () => {
+                updateWorkLogFormPhases(logFormProject.value);
+            });
+        }
+
+        // 彈窗階段連動任務下拉
+        if (logFormPhase) {
+            logFormPhase.addEventListener('change', () => {
+                updateWorkLogFormTasks(logFormProject.value, logFormPhase.value);
+            });
+        }
+
+        // 提交工作日誌表單
+        if (workLogForm) {
+            workLogForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const editId = logEditId.value;
+                const date = logFormDate.value;
+                const member = logFormMember.value;
+                const projectKey = logFormProject.value;
+                const hours = parseFloat(logFormHours.value) || 1;
+                const phaseName = logFormPhase.value;
+                const taskName = logFormTask.value;
+                const content = logFormContent.value.trim();
+
+                if (!appData.global_data.work_logs) {
+                    appData.global_data.work_logs = [];
+                }
+
+                if (editId) {
+                    // 編輯現有日誌
+                    const targetLog = appData.global_data.work_logs.find(l => l.id === editId);
+                    if (targetLog) {
+                        targetLog.date = date;
+                        targetLog.member = member;
+                        targetLog.projectKey = projectKey;
+                        targetLog.hours = hours;
+                        targetLog.phaseName = phaseName;
+                        targetLog.taskName = taskName;
+                        targetLog.content = content;
+                    }
+                } else {
+                    // 新增日誌
+                    const newLog = {
+                        id: `log_${Date.now()}`,
+                        date,
+                        member,
+                        projectKey,
+                        hours,
+                        phaseName,
+                        taskName,
+                        content,
+                        createdAt: new Date().toISOString()
+                    };
+                    appData.global_data.work_logs.unshift(newLog);
+                }
+
+                saveData();
+                workLogModal.style.display = 'none';
+                renderWorkLogsView();
+                renderTimesheetDashboard();
+            });
+        }
+    }
+
+    function updateWorkLogFormPhases(selectedModelKey, selectedPhase = '') {
+        if (!logFormPhase) return;
+        logFormPhase.innerHTML = '<option value="">-- 無特定階段 / 一般運營 --</option>';
+
+        const model = appData[selectedModelKey];
+        if (model && model.todos) {
+            model.todos.forEach(group => {
+                const opt = document.createElement('option');
+                opt.value = group.parent;
+                opt.textContent = group.parent;
+                if (group.parent === selectedPhase) opt.selected = true;
+                logFormPhase.appendChild(opt);
+            });
+        }
+        updateWorkLogFormTasks(selectedModelKey, logFormPhase.value);
+    }
+
+    function updateWorkLogFormTasks(selectedModelKey, selectedPhase, selectedTask = '') {
+        if (!logFormTask) return;
+        logFormTask.innerHTML = '<option value="">-- 無特定任務 / 跨任務執行 --</option>';
+
+        const model = appData[selectedModelKey];
+        if (model && model.todos && selectedPhase) {
+            const group = model.todos.find(g => g.parent === selectedPhase);
+            if (group && group.items) {
+                group.items.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.task;
+                    opt.textContent = item.task;
+                    if (item.task === selectedTask) opt.selected = true;
+                    logFormTask.appendChild(opt);
+                });
+            }
+        }
+    }
+
+    function openWorkLogModal(editId = null) {
+        if (!workLogModal) return;
+
+        // 填充專案下拉
+        logFormProject.innerHTML = '';
+        getModelKeys().forEach(key => {
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = appData[key].title;
+            logFormProject.appendChild(opt);
+        });
+
+        if (editId) {
+            // 編輯模式
+            modalWorkLogTitle.textContent = '編輯工作日誌';
+            const log = (appData.global_data?.work_logs || []).find(l => l.id === editId);
+            if (!log) return;
+
+            logEditId.value = log.id;
+            logFormDate.value = log.date;
+            logFormMember.value = log.member;
+            logFormProject.value = log.projectKey;
+            logFormHours.value = log.hours;
+            logFormContent.value = log.content;
+
+            updateWorkLogFormPhases(log.projectKey, log.phaseName);
+            updateWorkLogFormTasks(log.projectKey, log.phaseName, log.taskName);
+        } else {
+            // 新增模式
+            modalWorkLogTitle.textContent = '填寫今日工作日誌';
+            logEditId.value = '';
+            logFormDate.value = new Date().toISOString().slice(0, 10);
+            logFormMember.value = currentSessionUser || 'Kevin';
+            logFormHours.value = '1.0';
+            logFormContent.value = '';
+
+            const defaultModel = getModelKeys()[0] || 'dtc';
+            logFormProject.value = defaultModel;
+            updateWorkLogFormPhases(defaultModel);
+        }
+
+        workLogModal.style.display = 'flex';
+    }
+
+    function deleteWorkLog(logId) {
+        if (!appData.global_data?.work_logs) return;
+        appData.global_data.work_logs = appData.global_data.work_logs.filter(l => l.id !== logId);
+        saveData();
+        renderWorkLogsView();
+        renderTimesheetDashboard();
     }
 
     // ── 雲端同步與備份邏輯 ──────────────────────────────────────────

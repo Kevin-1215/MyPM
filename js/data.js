@@ -308,6 +308,42 @@ const dashboardData = {
                 "estimated_cost": "3,000",
                 "notes": "一年期網域與基本主機"
             }
+        ],
+        "auth": {
+            "users": {
+                "Kevin": {
+                    "password": "vb2026",
+                    "role": "Co-founder / PM & RD"
+                },
+                "Chloe": {
+                    "password": "vb2026",
+                    "role": "Co-founder / Design & Marketing"
+                }
+            }
+        },
+        "work_logs": [
+            {
+                "id": "log_demo_1",
+                "date": "2026-08-24",
+                "member": "Kevin",
+                "projectKey": "dtc",
+                "phaseName": "Phase 2: 數位通路與基礎建設",
+                "taskName": "建立電商網站",
+                "hours": 3.5,
+                "content": "完成了 Shopify 商店初期設定與網域綁定，並測試結帳流程金流 API 串接。",
+                "createdAt": "2026-08-24T14:30:00.000Z"
+            },
+            {
+                "id": "log_demo_2",
+                "date": "2026-08-24",
+                "member": "Chloe",
+                "projectKey": "dtc",
+                "phaseName": "Phase 1：前置準備",
+                "taskName": "建立品牌 Moodboard",
+                "hours": 4.0,
+                "content": "完成首波排球排汗 T-shirt 與專業運動襪的主視覺 Moodboard 與色彩定調。",
+                "createdAt": "2026-08-24T15:00:00.000Z"
+            }
         ]
     }
 };
