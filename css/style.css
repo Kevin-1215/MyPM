@@ -222,21 +222,15 @@ body {
   align-items: center;
   justify-content: space-between;
   box-shadow: var(--shadow-sm);
-  gap: 20px;
-}
-
-.navbar-top-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex: 1;
+  gap: 24px;
 }
 
 .navbar-brand {
+  order: 1;
   display: flex;
   align-items: center;
   gap: 14px;
+  flex-shrink: 0;
 }
 
 .logo-mark {
@@ -265,10 +259,19 @@ body {
   letter-spacing: 0.02em;
 }
 
+.view-switcher-wrapper {
+  order: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .navbar-actions {
+  order: 3;
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 .nav-chip {
@@ -2230,10 +2233,13 @@ h1.hero-title {
   }
 
   .navbar-brand {
+    order: 1 !important;
     gap: 8px !important;
     flex: 1 !important;
     min-width: 0 !important;
     overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   .logo-mark {
@@ -2257,6 +2263,7 @@ h1.hero-title {
   }
 
   .navbar-actions {
+    order: 2 !important;
     gap: 6px !important;
     flex-shrink: 0 !important;
     display: flex !important;
@@ -2282,6 +2289,7 @@ h1.hero-title {
 
   /* 🌟 4 大頁籤：滿寬獨立橫向滑動軌道 */
   .view-switcher-wrapper {
+    order: 3 !important;
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
