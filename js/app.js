@@ -311,12 +311,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const userRecord = appData.global_data?.auth?.users?.[username];
                 
-                // 具備雲端與本機雙重比對
+                // 具備雲端與自訂密碼比對，若已更換密碼則舊預設密碼無效
                 let isAuthValid = false;
-                if (userRecord && userRecord.password === password) {
-                    isAuthValid = true;
-                } else if ((username === 'Kevin' || username === 'Chloe') && password === 'vb2026') {
-                    // 備援預設密碼校驗
+                const expectedPassword = userRecord?.password || 'vb2026';
+                if (password === expectedPassword) {
                     isAuthValid = true;
                 }
 
@@ -551,11 +549,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!model.cons) model.cons = [];
             if (!model.todos) model.todos = [];
             
+            const seenTaskIds = new Set();
+            let needSaveDeduplication = false;
+
             model.todos.forEach((group, gIdx) => {
                 if (!group.id) group.id = `${key}-${gIdx + 1}`;
                 if (!group.items) group.items = [];
                 group.items.forEach((item, iIdx) => {
-                    if (!item.id) item.id = `${group.id}-${iIdx + 1}`;
+                    if (!item.id || seenTaskIds.has(item.id)) {
+                        item.id = `task_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+                        needSaveDeduplication = true;
+                    }
+                    seenTaskIds.add(item.id);
+
                     if (!item.startDate) item.startDate = '2026-09-01';
                     if (!item.dueDate) item.dueDate = '2026-09-30';
                     if (!item.owner) item.owner = '負責人';
@@ -563,6 +569,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (item.completed === undefined) item.completed = false;
                 });
             });
+
+            if (needSaveDeduplication) {
+                console.log('🔄 自動去重修復了任務 ID 衝突，確保資料精準定位');
+                saveData();
+            }
         });
     }
 
@@ -1138,7 +1149,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="9 18 15 12 9 6"></polyline>
                         </svg>
-                        <span>${group.parent}</span>
+                        <span class="group-name-text">${group.parent}</span>
+                        <button class="btn-icon-ghost btn-edit-group" title="編輯階段名稱" style="padding: 2px 5px; margin-left: 4px; border: none; background: transparent; cursor: pointer; color: var(--text-muted); display: inline-flex; align-items: center; border-radius: 4px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        </button>
                     </div>
                     <div class="group-header-right">
                         <span class="group-progress">${completedCount}/${totalCount}</span>
@@ -1153,10 +1167,25 @@ document.addEventListener('DOMContentLoaded', () => {
             const itemsContainer = groupEl.querySelector('.todo-items');
             const addBtn = groupEl.querySelector('.btn-add-item-to-group');
             const delGroupBtn = groupEl.querySelector('.btn-del-group');
+            const editGroupBtn = groupEl.querySelector('.btn-edit-group');
+
+            // 編輯階段名稱
+            if (editGroupBtn) {
+                editGroupBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const currentName = group.parent;
+                    const newName = prompt('請輸入新的階段名稱：', currentName);
+                    if (newName && newName.trim() && newName.trim() !== currentName) {
+                        group.parent = newName.trim();
+                        renderTodos();
+                        saveData();
+                    }
+                });
+            }
 
             // 展開/收合
             titleContainer.addEventListener('click', (e) => {
-                if (e.target.closest('.group-drag-handle')) return;
+                if (e.target.closest('.group-drag-handle') || e.target.closest('.btn-edit-group')) return;
                 e.stopPropagation();
                 groupEl.classList.toggle('expanded');
             });
@@ -1473,6 +1502,27 @@ document.addEventListener('DOMContentLoaded', () => {
         modalTaskClose.addEventListener('click', () => taskModal.style.display = 'none');
         modalTaskCancel.addEventListener('click', () => taskModal.style.display = 'none');
 
+        // 日期輸入框連動防呆
+        if (taskFormStart && taskFormDue) {
+            taskFormStart.addEventListener('change', () => {
+                if (taskFormStart.value) {
+                    taskFormDue.min = taskFormStart.value;
+                    if (taskFormDue.value && taskFormDue.value < taskFormStart.value) {
+                        taskFormDue.value = taskFormStart.value;
+                    }
+                }
+            });
+
+            taskFormDue.addEventListener('change', () => {
+                if (taskFormDue.value) {
+                    taskFormStart.max = taskFormDue.value;
+                    if (taskFormStart.value && taskFormStart.value > taskFormDue.value) {
+                        taskFormStart.value = taskFormDue.value;
+                    }
+                }
+            });
+        }
+
         taskForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const modelKey = taskEditModel.value;
@@ -1486,6 +1536,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 owner: taskFormOwner.value.trim() || '負責人',
                 notes: taskFormNotes.value.trim()
             };
+
+            // 提交時二次防呆校驗
+            if (taskData.startDate && taskData.dueDate && taskData.startDate > taskData.dueDate) {
+                alert('⚠️ 開始日期不能晚於預計完成日期，請修正後再儲存！');
+                return;
+            }
 
             const model = appData[modelKey];
             const phase = model.todos.find(p => p.id === targetPhaseId);
@@ -1520,7 +1576,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             } else {
-                const newItemId = `${targetPhaseId}-${phase.items.length + 1}`;
+                const newItemId = `task_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
                 phase.items.push({
                     id: newItemId,
                     task: taskData.task,
@@ -1564,12 +1620,27 @@ document.addEventListener('DOMContentLoaded', () => {
             let targetItem = null;
             let currentPhase = null;
 
-            for (const p of model.todos) {
-                const found = p.items.find(i => i.id === itemId);
-                if (found) {
-                    targetItem = found;
-                    currentPhase = p;
-                    break;
+            // 優先從指定 phaseId 查找，杜絕跨階段錯位
+            if (defaultPhaseId) {
+                const p = model.todos.find(g => g.id === defaultPhaseId);
+                if (p) {
+                    const found = p.items.find(i => i.id === itemId);
+                    if (found) {
+                        targetItem = found;
+                        currentPhase = p;
+                    }
+                }
+            }
+
+            // 若指定 phaseId 沒找到，再全域搜尋
+            if (!targetItem) {
+                for (const p of model.todos) {
+                    const found = p.items.find(i => i.id === itemId);
+                    if (found) {
+                        targetItem = found;
+                        currentPhase = p;
+                        break;
+                    }
                 }
             }
 
@@ -1581,6 +1652,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 taskFormDue.value = targetItem.dueDate;
                 taskFormOwner.value = targetItem.owner;
                 taskFormNotes.value = targetItem.notes || '';
+
+                // 設定日期邊界防呆
+                taskFormDue.min = targetItem.startDate || '';
+                taskFormStart.max = targetItem.dueDate || '';
             }
         } else {
             modalTaskTitle.textContent = '新增待辦事項';
@@ -1589,6 +1664,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             taskFormStart.value = '2026-09-01';
             taskFormDue.value = '2026-09-20';
+            taskFormDue.min = '2026-09-01';
+            taskFormStart.max = '2026-09-20';
             taskFormOwner.value = '負責人';
             taskFormNotes.value = '';
         }
