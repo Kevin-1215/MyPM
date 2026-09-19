@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>排球服飾工作室 | 待辦事項清單與專案管理系統</title>
-  <link rel="stylesheet" href="css/style.css?v=5.2" />
+  <link rel="stylesheet" href="css/style.css?v=5.3" />
   <style>
     /* ══ 登入門戶 100% 精確獨立樣式 (保證與目標設計完全一致) ══ */
     .login-portal-overlay {
@@ -207,52 +207,54 @@
 
   <!-- ══ Navbar ══════════════════════════════════════════════ -->
   <nav class="navbar" id="main-navbar" style="display:none;">
-    <div class="navbar-top-row">
-      <!-- 1. 左側：品牌 Logo -->
-      <div class="navbar-brand">
-        <div class="logo-mark">VS</div>
-        <div>
-          <div class="brand-text">Volleyball Apparel Studio Project Hub</div>
-          <div class="brand-sub">排球服飾工作室｜待辦事項清單與專案管理系統</div>
+    <div class="navbar-inner">
+      <div class="navbar-top-row">
+        <!-- 1. 左側：品牌 Logo -->
+        <div class="navbar-brand">
+          <div class="logo-mark">VS</div>
+          <div>
+            <div class="brand-text">Volleyball Apparel Studio Project Hub</div>
+            <div class="brand-sub">排球服飾工作室｜待辦事項清單與專案管理系統</div>
+          </div>
         </div>
-      </div>
 
-      <!-- 3. 右側：狀態燈與身分選單 -->
-      <div class="navbar-actions">
-        <button class="nav-chip" id="saving-status" style="cursor:pointer; border-color:var(--border); color:var(--text-muted); background:transparent;">授權直接存檔</button>
-        
-        <!-- 使用者身分頭像與選單 -->
-        <div class="user-profile-wrapper" id="user-profile-wrapper">
-          <button class="user-profile-btn" id="user-profile-btn" title="使用者設定">
-            <span class="user-avatar" id="nav-user-avatar">K</span>
-            <span class="user-name" id="nav-user-name">Kevin</span>
-            <svg class="dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-          </button>
-          <div class="user-dropdown-menu" id="user-dropdown-menu" style="display:none;">
-            <div class="dropdown-header">
-              <span class="dropdown-user-role" id="dropdown-user-role">登入身分</span>
-              <strong class="dropdown-user-name" id="dropdown-user-name">Kevin</strong>
+        <!-- 3. 右側：狀態燈與身分選單 -->
+        <div class="navbar-actions">
+          <button class="nav-chip" id="saving-status" style="cursor:pointer; border-color:var(--border); color:var(--text-muted); background:transparent;">授權直接存檔</button>
+          
+          <!-- 使用者身分頭像與選單 -->
+          <div class="user-profile-wrapper" id="user-profile-wrapper">
+            <button class="user-profile-btn" id="user-profile-btn" title="使用者設定">
+              <span class="user-avatar" id="nav-user-avatar">K</span>
+              <span class="user-name" id="nav-user-name">Kevin</span>
+              <svg class="dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="user-dropdown-menu" id="user-dropdown-menu" style="display:none;">
+              <div class="dropdown-header">
+                <span class="dropdown-user-role" id="dropdown-user-role">登入身分</span>
+                <strong class="dropdown-user-name" id="dropdown-user-name">Kevin</strong>
+              </div>
+              <button class="dropdown-item" id="btn-open-change-pwd">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                修改密碼
+              </button>
+              <button class="dropdown-item text-danger" id="btn-logout">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                登出系統
+              </button>
             </div>
-            <button class="dropdown-item" id="btn-open-change-pwd">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-              修改密碼
-            </button>
-            <button class="dropdown-item text-danger" id="btn-logout">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-              登出系統
-            </button>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 2. 下行：4 大視圖切換器 -->
-    <div class="view-switcher-wrapper">
-      <div class="view-switcher" id="view-switcher">
-        <button class="view-tab active" data-view="dashboard">總覽儀表板</button>
-        <button class="view-tab" data-view="models">待辦與專案管理</button>
-        <button class="view-tab" data-view="gantt">專案甘特圖</button>
-        <button class="view-tab" data-view="logs">工作日誌與工時</button>
+      <!-- 2. 下行：4 大視圖切換器 -->
+      <div class="view-switcher-wrapper">
+        <div class="view-switcher" id="view-switcher">
+          <button class="view-tab active" data-view="dashboard">總覽儀表板</button>
+          <button class="view-tab" data-view="models">待辦與專案管理</button>
+          <button class="view-tab" data-view="gantt">專案甘特圖</button>
+          <button class="view-tab" data-view="logs">工作日誌與工時</button>
+        </div>
       </div>
     </div>
   </nav>
@@ -289,67 +291,13 @@
       </section>
       
       <div class="dashboard-grid">
-        <!-- 各專案分類進度卡片 -->
+        <!-- 1. 各專案分類進度卡片 -->
         <div class="card dashboard-card">
           <h3 class="card-title">各專案分類進度總覽</h3>
           <div id="overall-progress-container"></div>
         </div>
 
-        <!-- 決策備忘錄 -->
-        <div class="card dashboard-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); margin-bottom:12px; padding-bottom:12px;">
-            <h3 class="card-title" style="border:none; margin:0; padding:0;">重要決策備忘錄</h3>
-            <button id="add-decision-btn" class="nav-chip" style="cursor:pointer; background:var(--bg-subtle);">+ 新增</button>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table" id="decisions-table">
-              <thead><tr><th>日期</th><th>決策主題</th><th>結論與原因</th><th>負責人</th><th>操作</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- 資源估算 -->
-        <div class="card dashboard-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); margin-bottom:12px; padding-bottom:12px;">
-            <h3 class="card-title" style="border:none; margin:0; padding:0;">初期資源與預算估算</h3>
-            <button id="add-budget-btn" class="nav-chip" style="cursor:pointer; background:var(--bg-subtle);">+ 新增</button>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table" id="budget-table">
-              <thead><tr><th>項目</th><th>預估金額 (NTD)</th><th>備註</th><th>操作</th></tr></thead>
-              <tbody></tbody>
-              <tfoot>
-                <tr>
-                  <td style="font-weight:700; text-align:right;">總計</td>
-                  <td colspan="3" id="budget-total" style="font-weight:700; color:var(--navy); font-size:1.1rem;">0</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-
-        <!-- 全域待辦事項動態追蹤 -->
-        <div class="card dashboard-card master-todos-card">
-          <div class="card-header-flex">
-            <h3 class="card-title" style="border:none; margin:0; padding:0;">全域待辦事項動態追蹤</h3>
-            <div class="filter-group">
-              <select id="db-filter-model" class="filter-select">
-                <option value="all">所有專案分類</option>
-              </select>
-              <select id="db-filter-status" class="filter-select">
-                <option value="all">全部狀態</option>
-                <option value="pending">待處理 / 進行中</option>
-                <option value="completed">已完成</option>
-              </select>
-            </div>
-          </div>
-          <div class="master-todo-list-container" id="dashboard-master-todos">
-            <!-- Injected via app.js -->
-          </div>
-        </div>
-
-        <!-- 團隊工時與報工總覽 (Timesheet Overview) -->
+        <!-- 2. 團隊工時與報工總覽 (Timesheet Overview) -->
         <div class="card dashboard-card">
           <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); margin-bottom:12px; padding-bottom:12px;">
             <h3 class="card-title" style="border:none; margin:0; padding:0;">團隊工時與報工總覽</h3>
@@ -383,8 +331,62 @@
           </div>
         </div>
 
-        <!-- 最新工作日誌動態快照 (Recent Activity) -->
+        <!-- 3. 決策備忘錄 -->
         <div class="card dashboard-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); margin-bottom:12px; padding-bottom:12px;">
+            <h3 class="card-title" style="border:none; margin:0; padding:0;">重要決策備忘錄</h3>
+            <button id="add-decision-btn" class="nav-chip" style="cursor:pointer; background:var(--bg-subtle);">+ 新增</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="decisions-table">
+              <thead><tr><th>日期</th><th>決策主題</th><th>結論與原因</th><th>負責人</th><th>操作</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 4. 資源估算 -->
+        <div class="card dashboard-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); margin-bottom:12px; padding-bottom:12px;">
+            <h3 class="card-title" style="border:none; margin:0; padding:0;">初期資源與預算估算</h3>
+            <button id="add-budget-btn" class="nav-chip" style="cursor:pointer; background:var(--bg-subtle);">+ 新增</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table" id="budget-table">
+              <thead><tr><th>項目</th><th>預估金額 (NTD)</th><th>備註</th><th>操作</th></tr></thead>
+              <tbody></tbody>
+              <tfoot>
+                <tr>
+                  <td style="font-weight:700; text-align:right;">總計</td>
+                  <td colspan="3" id="budget-total" style="font-weight:700; color:var(--navy); font-size:1.1rem;">0</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <!-- 5. 全域待辦事項動態追蹤 -->
+        <div class="card dashboard-card master-todos-card">
+          <div class="card-header-flex">
+            <h3 class="card-title" style="border:none; margin:0; padding:0;">全域待辦事項動態追蹤</h3>
+            <div class="filter-group">
+              <select id="db-filter-model" class="filter-select">
+                <option value="all">所有專案分類</option>
+              </select>
+              <select id="db-filter-status" class="filter-select">
+                <option value="all">全部狀態</option>
+                <option value="pending">待處理 / 進行中</option>
+                <option value="completed">已完成</option>
+              </select>
+            </div>
+          </div>
+          <div class="master-todo-list-container" id="dashboard-master-todos">
+            <!-- Injected via app.js -->
+          </div>
+        </div>
+
+        <!-- 6. 最新工作日誌動態快照 (Recent Activity) -->
+        <div class="card dashboard-card master-todos-card">
           <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border); margin-bottom:12px; padding-bottom:12px;">
             <h3 class="card-title" style="border:none; margin:0; padding:0;">近期工作日誌動態 (Recent Activity)</h3>
             <button class="nav-chip btn-view-all-logs" style="cursor:pointer; background:var(--bg-subtle);">查看全部 ➔</button>

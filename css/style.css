@@ -220,13 +220,21 @@ body {
   z-index: 100;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+}
+
+.navbar-inner {
+  max-width: 1560px;
+  margin: 0 auto;
   padding: 0 2.5rem;
   height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: var(--shadow-sm);
   gap: 24px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .navbar-brand {
@@ -2236,6 +2244,9 @@ h1.hero-title {
 
 /* ── 平板與中型螢幕 (<= 1024px) ──────────────────────────────── */
 @media (max-width: 1024px) {
+  .navbar-inner {
+    padding: 0 1.5rem;
+  }
   .main-wrapper {
     padding: 1.5rem 1.5rem 4rem;
   }
@@ -2258,12 +2269,19 @@ h1.hero-title {
 
   /* 🌟 Navbar 滿寬對齊與雙行優雅佈局 */
   .navbar {
+    padding: 0 !important;
+    height: auto !important;
+    background: var(--bg-surface) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .navbar-inner {
     padding: 8px 12px 10px !important;
     height: auto !important;
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 8px !important;
-    background: var(--bg-surface) !important;
     width: 100% !important;
     box-sizing: border-box !important;
   }
