@@ -728,7 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const meta = getModelMeta(modelKey);
             const notesHtml = task.notes && task.notes.trim() 
-                ? `<div class="master-todo-notes">${ICONS.note}${task.notes}</div>` 
+                ? `<div class="master-todo-notes"><span class="note-icon">${ICONS.note}</span><span class="note-text">${task.notes}</span></div>` 
                 : '';
 
             card.innerHTML = `
@@ -1317,7 +1317,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const checkboxId = `todo-${currentModelKey}-${groupIndex}-${itemIndex}`;
                 const notesHtml = item.notes && item.notes.trim() 
-                    ? `<div class="todo-item-notes">${ICONS.note}${item.notes}</div>` 
+                    ? `<div class="todo-item-notes"><span class="note-icon">${ICONS.note}</span><span class="note-text">${item.notes}</span></div>` 
                     : '';
 
                 itemEl.innerHTML = `

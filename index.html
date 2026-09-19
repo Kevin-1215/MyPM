@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>排球服飾工作室 | 待辦事項清單與專案管理系統</title>
-  <link rel="stylesheet" href="css/style.css?v=5.1" />
+  <link rel="stylesheet" href="css/style.css?v=5.2" />
   <style>
     /* ══ 登入門戶 100% 精確獨立樣式 (保證與目標設計完全一致) ══ */
     .login-portal-overlay {
@@ -207,50 +207,52 @@
 
   <!-- ══ Navbar ══════════════════════════════════════════════ -->
   <nav class="navbar" id="main-navbar" style="display:none;">
-    <!-- 1. 左側：品牌 Logo -->
-    <div class="navbar-brand">
-      <div class="logo-mark">VS</div>
-      <div>
-        <div class="brand-text">Volleyball Apparel Studio Project Hub</div>
-        <div class="brand-sub">排球服飾工作室｜待辦事項清單與專案管理系統</div>
+    <div class="navbar-top-row">
+      <!-- 1. 左側：品牌 Logo -->
+      <div class="navbar-brand">
+        <div class="logo-mark">VS</div>
+        <div>
+          <div class="brand-text">Volleyball Apparel Studio Project Hub</div>
+          <div class="brand-sub">排球服飾工作室｜待辦事項清單與專案管理系統</div>
+        </div>
+      </div>
+
+      <!-- 3. 右側：狀態燈與身分選單 -->
+      <div class="navbar-actions">
+        <button class="nav-chip" id="saving-status" style="cursor:pointer; border-color:var(--border); color:var(--text-muted); background:transparent;">授權直接存檔</button>
+        
+        <!-- 使用者身分頭像與選單 -->
+        <div class="user-profile-wrapper" id="user-profile-wrapper">
+          <button class="user-profile-btn" id="user-profile-btn" title="使用者設定">
+            <span class="user-avatar" id="nav-user-avatar">K</span>
+            <span class="user-name" id="nav-user-name">Kevin</span>
+            <svg class="dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="user-dropdown-menu" id="user-dropdown-menu" style="display:none;">
+            <div class="dropdown-header">
+              <span class="dropdown-user-role" id="dropdown-user-role">登入身分</span>
+              <strong class="dropdown-user-name" id="dropdown-user-name">Kevin</strong>
+            </div>
+            <button class="dropdown-item" id="btn-open-change-pwd">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              修改密碼
+            </button>
+            <button class="dropdown-item text-danger" id="btn-logout">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+              登出系統
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- 2. 中間：4 大視圖切換器 -->
+    <!-- 2. 下行：4 大視圖切換器 -->
     <div class="view-switcher-wrapper">
       <div class="view-switcher" id="view-switcher">
         <button class="view-tab active" data-view="dashboard">總覽儀表板</button>
         <button class="view-tab" data-view="models">待辦與專案管理</button>
         <button class="view-tab" data-view="gantt">專案甘特圖</button>
         <button class="view-tab" data-view="logs">工作日誌與工時</button>
-      </div>
-    </div>
-
-    <!-- 3. 右側：狀態燈與身分選單 -->
-    <div class="navbar-actions">
-      <button class="nav-chip" id="saving-status" style="cursor:pointer; border-color:var(--border); color:var(--text-muted); background:transparent;">授權直接存檔</button>
-      
-      <!-- 使用者身分頭像與選單 -->
-      <div class="user-profile-wrapper" id="user-profile-wrapper">
-        <button class="user-profile-btn" id="user-profile-btn" title="使用者設定">
-          <span class="user-avatar" id="nav-user-avatar">K</span>
-          <span class="user-name" id="nav-user-name">Kevin</span>
-          <svg class="dropdown-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </button>
-        <div class="user-dropdown-menu" id="user-dropdown-menu" style="display:none;">
-          <div class="dropdown-header">
-            <span class="dropdown-user-role" id="dropdown-user-role">登入身分</span>
-            <strong class="dropdown-user-name" id="dropdown-user-name">Kevin</strong>
-          </div>
-          <button class="dropdown-item" id="btn-open-change-pwd">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            修改密碼
-          </button>
-          <button class="dropdown-item text-danger" id="btn-logout">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            登出系統
-          </button>
-        </div>
       </div>
     </div>
   </nav>
@@ -845,7 +847,7 @@
 
   <!-- ══ Scripts ══════════════════════════════════════════════ -->
   <script src="js/data.js?v=2.2"></script>
-  <script src="js/app.js?v=2.2"></script>
+  <script src="js/app.js?v=2.3"></script>
 </body>
 
 </html>
